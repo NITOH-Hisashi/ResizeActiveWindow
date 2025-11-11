@@ -17,7 +17,7 @@ function renderPresets() {
                 presetBtn.className = "preset";
                 presetBtn.onclick = () => {
                     chrome.windows.getCurrent({}, (window) => {
-                        const newLeft = screen.availWidth - parameter.width;
+                        const newLeft = window.left + window.width - parameter.width;
                         chrome.windows.update(
                             window.id,
                             {
@@ -36,7 +36,7 @@ function renderPresets() {
 /** Render the settings panel for managing presets
  * @returns {void}
  */
-function renderSettings() {
+function renderSettings(highlightIndex = null) {
     chrome.storage.local.get({ presets: [] }, (data) => {
         const listRow = document.getElementById("presetList");
         listRow.innerHTML = "";
@@ -59,9 +59,42 @@ function renderSettings() {
             tr.appendChild(tdHeight);
             tr.appendChild(tdDelete);
             listRow.appendChild(tr);
+
+            // 直近追加された行をハイライト
+            if (highlightIndex === i) {
+                tr.classList.add("highlight");
+                setTimeout(() => {
+                    tr.classList.remove("highlight");
+                }, 500); // 500ms後に通常表示へ
+            }
         });
     });
 }
+
+/** Add a new preset from input fields
+ * @returns {void}
+ */
+function addPreset() {
+    const w = parseInt(document.getElementById("newWidth").value, 10);
+    const h = parseInt(document.getElementById("newHeight").value, 10);
+    if (!w || !h) return; // 入力チェック
+
+    chrome.storage.local.get({ presets: [] }, (data) => {
+        data.presets.push({ width: w, height: h });
+        const newIndex = data.presets.length - 1; // 追加された要素のインデックス
+        chrome.storage.local.set({ presets: data.presets }, () => {
+            renderSettings(newIndex); // 追加された行だけハイライト
+        });
+    });
+}
+
+/** フォーム全体で Enter キーを拾う
+ * @returns {void}
+ */
+document.getElementById("presetForm").addEventListener("submit", (e) => {
+    e.preventDefault(); // デフォルトの送信動作を防止
+    addPreset();
+});
 
 /** Handle settings button click
  * @returns {void}
@@ -84,15 +117,12 @@ document.getElementById("back").onclick = () => {
 };
 
 /** Handle add preset button click
+ * Add ボタンのクリックでも呼び出し
  * @returns {void}
  */
-document.getElementById("addPreset").onclick = () => {
-    const w = parseInt(document.getElementById("newWidth").value, 10);
-    const h = parseInt(document.getElementById("newHeight").value, 10);
-    chrome.storage.local.get({ presets: [] }, (data) => {
-        data.presets.push({ width: w, height: h });
-        chrome.storage.local.set({ presets: data.presets }, renderSettings);
-    });
+document.getElementById("addPreset").onclick = (e) => {
+    e.preventDefault(); // フォーム送信を防止
+    addPreset();
 };
 
 renderPresets();
