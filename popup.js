@@ -36,7 +36,7 @@ function renderPresets() {
 /** Render the settings panel for managing presets
  * @returns {void}
  */
-function renderSettings() {
+function renderSettings(highlightIndex = null) {
     chrome.storage.local.get({ presets: [] }, (data) => {
         const listRow = document.getElementById("presetList");
         listRow.innerHTML = "";
@@ -60,6 +60,13 @@ function renderSettings() {
             tr.appendChild(tdDelete);
             listRow.appendChild(tr);
 
+            // 直近追加された行をハイライト
+            if (highlightIndex === i) {
+                tr.classList.add("highlight");
+                setTimeout(() => {
+                    tr.classList.remove("highlight");
+                }, 500); // 500ms後に通常表示へ
+            }
         });
     });
 }
@@ -72,6 +79,11 @@ function addPreset() {
     const h = parseInt(document.getElementById("newHeight").value, 10);
     if (!w || !h) return; // 入力チェック
 
+    chrome.storage.local.get({ presets: [] }, (data) => {
+        data.presets.push({ width: w, height: h });
+        const newIndex = data.presets.length - 1; // 追加された要素のインデックス
+        chrome.storage.local.set({ presets: data.presets }, () => {
+            renderSettings(newIndex); // 追加された行だけハイライト
         });
     });
 }

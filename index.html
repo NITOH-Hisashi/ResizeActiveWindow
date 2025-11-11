@@ -88,11 +88,18 @@
                 /* 内側の余白調整 */
                 text-align: center;
             }
+
+            .highlight {
+                background-color: black;
+                color: white;
+                transition: background-color 0.5s, color 0.5s;
+            }
         </style>
     </head>
 
     <body>
         <div id="presets"></div>
+        <hr />
         <button id="settings"> ⚙ Settings</button>
 
         <div id="settingsPanel" style="display:none;">
