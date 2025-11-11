@@ -59,9 +59,30 @@ function renderSettings() {
             tr.appendChild(tdHeight);
             tr.appendChild(tdDelete);
             listRow.appendChild(tr);
+
         });
     });
 }
+
+/** Add a new preset from input fields
+ * @returns {void}
+ */
+function addPreset() {
+    const w = parseInt(document.getElementById("newWidth").value, 10);
+    const h = parseInt(document.getElementById("newHeight").value, 10);
+    if (!w || !h) return; // 入力チェック
+
+        });
+    });
+}
+
+/** フォーム全体で Enter キーを拾う
+ * @returns {void}
+ */
+document.getElementById("presetForm").addEventListener("submit", (e) => {
+    e.preventDefault(); // デフォルトの送信動作を防止
+    addPreset();
+});
 
 /** Handle settings button click
  * @returns {void}
@@ -84,15 +105,12 @@ document.getElementById("back").onclick = () => {
 };
 
 /** Handle add preset button click
+ * Add ボタンのクリックでも呼び出し
  * @returns {void}
  */
-document.getElementById("addPreset").onclick = () => {
-    const w = parseInt(document.getElementById("newWidth").value, 10);
-    const h = parseInt(document.getElementById("newHeight").value, 10);
-    chrome.storage.local.get({ presets: [] }, (data) => {
-        data.presets.push({ width: w, height: h });
-        chrome.storage.local.set({ presets: data.presets }, renderSettings);
-    });
+document.getElementById("addPreset").onclick = (e) => {
+    e.preventDefault(); // フォーム送信を防止
+    addPreset();
 };
 
 renderPresets();
