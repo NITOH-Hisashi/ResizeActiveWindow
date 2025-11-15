@@ -101,7 +101,7 @@ document.getElementById("presetForm").addEventListener("submit", (e) => {
  */
 document.getElementById("settings").onclick = () => {
     document.getElementById("presets").style.display = "none";
-    document.getElementById("settings").style.display = "none";
+    document.getElementById("btn").style.display = "none";
     document.getElementById("settingsPanel").style.display = "block";
     renderSettings();
 };
@@ -111,7 +111,7 @@ document.getElementById("settings").onclick = () => {
  */
 document.getElementById("back").onclick = () => {
     document.getElementById("presets").style.display = "block";
-    document.getElementById("settings").style.display = "block";
+    document.getElementById("btn").style.display = "block";
     document.getElementById("settingsPanel").style.display = "none";
     renderPresets();
 };
